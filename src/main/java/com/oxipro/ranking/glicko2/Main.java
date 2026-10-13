@@ -126,12 +126,25 @@ public class Main {
         return Math.exp(a / 2);
     }
 
-    public static double newGrd(double old, double newVol) {
+    public static double preRatingGrd(double old, double newVol) {
         double oldSQ = Math.pow(old, 2);
         double volSQ = Math.pow(newVol, 2);
 
         return Math.sqrt(oldSQ + volSQ);
     }
+
+    public static double newGrd(double old, double newVol, double mu, double[] muMicro, double[] muGrd) {
+
+        double preRatingGrd = preRatingGrd(old, newVol);
+        double l = 1/(Math.pow(preRatingGrd, 2));
+        double r = 1/computeV(mu, muMicro, muGrd);
+
+        double grd = 1/(Math.sqrt(l + r));
+
+        return grd;
+    }
+
+
 
     public static double convertRanking(float rating) {
         double gr = (rating-1500)/173.7178;
