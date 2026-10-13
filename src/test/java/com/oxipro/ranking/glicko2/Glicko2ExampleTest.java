@@ -56,7 +56,7 @@ public class Glicko2ExampleTest {
         double sigma = Main.newVol(0.06, scores, mu, muJ, phiJ, phi);
         check("sigma'", 0.05999, sigma, 0.0001);
 
-        double phiStar = Main.newGrd(phi, sigma);
+        double phiStar = Main.preRatingGrd(phi, sigma);
         check("phi*", 1.152862, phiStar, 0.001);
 
         // Steps 7 and 8 are not separate methods. They are applied here to the program's outputs.
