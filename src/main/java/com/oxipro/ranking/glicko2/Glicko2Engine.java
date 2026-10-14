@@ -67,6 +67,7 @@ public class Glicko2Engine {
 
     /**
      * Updates the Player Rating, volatility and Deviation in function of his scores in played matches.
+     * With no games, only Step 6 applies: one period of {@link #age} and rating and volatility stay the same.
      *
      * @param playerRating The player
      * @param resultList the results
@@ -75,12 +76,14 @@ public class Glicko2Engine {
      */
     public PlayerRating update(PlayerRating playerRating, List<MatchResult> resultList, long updateTime) {
 
-        double phi = math.convertDeviation(playerRating.rd);
-        double micro = math.convertRanking(playerRating.rating);
-
         if (resultList == null || resultList.isEmpty()) {
+            age(playerRating, playerRating.getLastUpdate() + (long) this.PERIOD);
+            playerRating.lastUpdate = updateTime;
             return playerRating;
         }
+
+        double phi = math.convertDeviation(playerRating.rd);
+        double micro = math.convertRanking(playerRating.rating);
 
         double vTermSum = 0;
         double deltaTermSum = 0;
