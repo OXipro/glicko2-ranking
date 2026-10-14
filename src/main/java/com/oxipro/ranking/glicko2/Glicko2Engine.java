@@ -26,12 +26,16 @@ public class Glicko2Engine {
         this.math = new Glicko2Math(TAU, EPSILON, SCALE);
     }
 
+    /**
+     * @see #Glicko2Engine(double, double, double, double)
+     */
     public Glicko2Engine(double TAU, double SCALE, double PERIOD) {
         this(TAU, 0.000001, SCALE, PERIOD);
     }
 
     /**
      * Initialize the settings of the glicko2 Rating Engine with default values.
+     * @see #Glicko2Engine(double, double, double, double)
      */
     public Glicko2Engine() {
         this(0.5, 0.000001, 173.7178, 4 * 24 * 60 * 60 * 1000L);
@@ -52,18 +56,19 @@ public class Glicko2Engine {
     }
 
     /**
-     * Updates the Player Rating in function of his played matches.
+     * Updates the Player Rating, volatility and Deviation in function of his scores in played matches.
+     *
      * @param playerRating The player
      * @param resultList the results
+     * @param updateTime the time of the update
+     * @return the player rating instance
      */
-    public PlayerRating update(PlayerRating playerRating, List<MatchResult> resultList) {
+    public PlayerRating update(PlayerRating playerRating, List<MatchResult> resultList, long updateTime) {
 
         double phi = math.convertDeviation(playerRating.rd);
         double micro = math.convertRanking(playerRating.rating);
 
         if (resultList == null || resultList.isEmpty()) {
-            double phiPrime = math.preRatingGrd(phi, playerRating.volatility);
-            playerRating.rd = this.SCALE * phiPrime;
             return playerRating;
         }
 
@@ -93,8 +98,17 @@ public class Glicko2Engine {
         playerRating.rating = this.SCALE * newMu + 1500;
         playerRating.rd = this.SCALE * newGrd;
         playerRating.volatility = newVol;
+        playerRating.lastUpdate = updateTime;
 
         return playerRating;
+    }
+
+    /**
+     * Warper for update but updateTime set current time
+     * @see #update(PlayerRating, List, long)
+     */
+    public PlayerRating update(PlayerRating playerRating, List<MatchResult> resultList) {
+        return update(playerRating, resultList, System.currentTimeMillis());
     }
 
 }
