@@ -86,6 +86,19 @@ public class Glicko2EngineTest {
         check("t", 0.4, engine.math.t, 0);
         check("epsilon", 0.00001, engine.math.epsilon, 0);
         check("scale", 200.0, engine.math.scale, 0);
+        check("rating", 1500, engine.RATING, 0);
+        check("ratingBase", 1500, engine.math.ratingBase, 0);
+        finish();
+    }
+
+    @Test
+    void enginePassesRatingBaseToMath() {
+        printHeader("engine rating base");
+        Glicko2Engine engine = new Glicko2Engine(0.5, 0.000001, 173.7178, 1000, 1200);
+        check("rating", 1200, engine.RATING, 0);
+        check("ratingBase", 1200, engine.math.ratingBase, 0);
+        check("mu", 0, engine.math.convertRanking(1200), 0.000001);
+        check("back", 1200, engine.math.convertMu(0), 0.000001);
         finish();
     }
 

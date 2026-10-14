@@ -8,6 +8,7 @@ public class Glicko2Engine {
     public final double EPSILON;
     public final double SCALE;
     public final double PERIOD;
+    public final double RATING;
     public final Glicko2Math math;
 
 
@@ -17,20 +18,29 @@ public class Glicko2Engine {
      * @param EPSILON Convergence tolerance for the volatility iteration
      * @param SCALE The scale of the rating system, converts glicko2 format to yours.
      * @param PERIOD The time in ms of a period.
+     * @param RATING The base rating on your scale.
      */
-    public Glicko2Engine(double TAU, double EPSILON, double SCALE, double PERIOD) {
+    public Glicko2Engine(double TAU, double EPSILON, double SCALE, double PERIOD, double RATING) {
         this.TAU = TAU;
         this.EPSILON = EPSILON;
         this.SCALE = SCALE;
         this.PERIOD = PERIOD;
-        this.math = new Glicko2Math(TAU, EPSILON, SCALE);
+        this.RATING = RATING;
+        this.math = new Glicko2Math(TAU, EPSILON, SCALE, RATING);
     }
 
     /**
-     * @see #Glicko2Engine(double, double, double, double)
+     * @see #Glicko2Engine(double, double, double, double, double)
+     */
+    public Glicko2Engine(double TAU, double EPSILON, double SCALE, double PERIOD) {
+        this(TAU, EPSILON, SCALE, PERIOD, 1500);
+    }
+
+    /**
+     * @see #Glicko2Engine(double, double, double, double, double)
      */
     public Glicko2Engine(double TAU, double SCALE, double PERIOD) {
-        this(TAU, 0.000001, SCALE, PERIOD);
+        this(TAU, 0.000001, SCALE, PERIOD, 1500);
     }
 
     /**
@@ -38,7 +48,7 @@ public class Glicko2Engine {
      * @see #Glicko2Engine(double, double, double, double)
      */
     public Glicko2Engine() {
-        this(0.5, 0.000001, 173.7178, 4 * 24 * 60 * 60 * 1000L);
+        this(Glicko2Defaults.TAU, Glicko2Defaults.EPSILON, Glicko2Defaults.SCALE, 4 * 24 * 60 * 60 * 1000L);
     }
 
     /**
@@ -95,7 +105,7 @@ public class Glicko2Engine {
         double newGrd = math.newGrd(phi, newVol, v);
         double newMu = math.newMu(micro, newGrd, delta, v);
 
-        playerRating.rating = this.SCALE * newMu + 1500;
+        playerRating.rating = math.convertMu(newMu);
         playerRating.rd = this.SCALE * newGrd;
         playerRating.volatility = newVol;
         playerRating.lastUpdate = updateTime;

@@ -5,11 +5,13 @@ public class Glicko2Math {
     public final double t;
     public final double epsilon;
     public final double scale;
+    public final double ratingBase;
 
-    public Glicko2Math(double t, double epsilon, double scale) {
+    public Glicko2Math(double t, double epsilon, double scale, double ratingBase) {
         this.t = t;
         this.epsilon = epsilon;
         this.scale = scale;
+        this.ratingBase = ratingBase;
     }
 
     public double computeG(double grd) {
@@ -110,8 +112,12 @@ public class Glicko2Math {
     }
 
     public double convertRanking(double rating) {
-        double gr = (rating-1500)/scale;
+        double gr = (rating - ratingBase) / scale;
         return gr;
+    }
+
+    public double convertMu(double mu) {
+        return scale * mu + ratingBase;
     }
 
     public double convertDeviation(double deviation) {

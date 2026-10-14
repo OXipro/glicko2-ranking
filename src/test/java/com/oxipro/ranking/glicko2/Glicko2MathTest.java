@@ -53,7 +53,7 @@ public class Glicko2MathTest {
     @BeforeEach
     void setUp() {
         failures.clear();
-        math = new Glicko2Math(TAU, EPSILON, SCALE);
+        math = new Glicko2Math(TAU, EPSILON, SCALE, 1500);
     }
 
     @Test
@@ -63,6 +63,16 @@ public class Glicko2MathTest {
         check("mu1", MU1, math.convertRanking(1400), 0.001);
         check("mu2", MU2, math.convertRanking(1550), 0.001);
         check("mu3", MU3, math.convertRanking(1700), 0.001);
+        finish();
+    }
+
+    @Test
+    void convertMu() {
+        printHeader("convertMu");
+        check("rating", 1500, math.convertMu(MU), 0.02);
+        check("rating1", 1400, math.convertMu(MU1), 0.02);
+        check("rating2", 1550, math.convertMu(MU2), 0.02);
+        check("rating3", 1700, math.convertMu(MU3), 0.02);
         finish();
     }
 
